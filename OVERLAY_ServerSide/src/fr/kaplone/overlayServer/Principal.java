@@ -1,37 +1,36 @@
 package fr.kaplone.overlayServer;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-import fr.kaplone.overlayServerUtils.Deltas;
 import fr.kaplone.overlayServerUtils.OpenSocketUtil;
 import fr.kaplone.overlayServerUtils.ParseFileUtils;
 import fr.kaplone.overlayServerUtils.Displacement;
-import fr.kaplone.sourceUtils.Point;
+import fr.kaplone.sourceUtils.*;
 
 
 public class Principal {
 
 	public static void main(String[] args) {
-        
+		
+		int speedup = 20;
+		
+		ServerSideHands IPhoneF = new ServerSideHands(new ServerSideRightHand(1.0, new Point(1550, 440)), new ServerSideDevice(1.0 , new double [] {789.0, 451.0}, new double[] {382.0, 677.0}));
+		ServerSideHands NexusH = new ServerSideHands(new ServerSideRightHand(1.0, new Point(2750, 1050)), new ServerSideDevice(1.0, new double [] {2590.0, 307.0}, new double[] {998, 1762}));
+	
+		ArrayList<Point> allPoints = new ArrayList<Point>();
+	
+    
         try {
         	ArrayList<ArrayList<Integer>> myArray = OpenSocketUtil.openSocket();
         	for (int i= 0; i < myArray.size(); i++){
-        		for (int j= 0; j < myArray.get(i).size(); j++){
-        			System.out.print(myArray.get(i).get(j) + " ");
-        		}
-        		System.out.println("");
-        	}
+        		allPoints.add(new Point(myArray.get(i).get(1), myArray.get(i).get(2), null, myArray.get(i).get(0)));
+        	}	
 		} catch (IOException e) {
 			System.out.println("erreur dans la boucle principale");
 			e.printStackTrace();
 		}
+        
 	}
 
         
@@ -51,7 +50,7 @@ public class Principal {
 //		
 //		ArrayList<Integer> tousLesTemps;
 //		try {
-//			tousLesTemps = ParseFileUtils.fileToFrameNumber("/home/david/TESTS_racket/move/ref.txt");
+//			tousLesTemps = ParseFileUtils.fileToFrameNumber("ref.txt");
 //			System.out.println(tousLesTemps.get(8));
 //		} catch (IOException e1) {
 //			// TODO Auto-generated catch block
