@@ -3,6 +3,7 @@ package fr.kaplone.overlayServer;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import fr.kaplone.overlayServerUtils.Deltas;
 import fr.kaplone.overlayServerUtils.OpenSocketUtil;
 import fr.kaplone.overlayServerUtils.ParseFileUtils;
 import fr.kaplone.overlayServerUtils.Displacement;
@@ -15,25 +16,56 @@ public class Principal {
 		
 		int speedup = 20;
 		
-		ServerSideHands IPhoneF = new ServerSideHands(new ServerSideRightHand(1.0, new Point(1550, 440)), new ServerSideDevice(1.0 , new double [] {789.0, 451.0}, new double[] {382.0, 677.0}));
-		ServerSideHands NexusH = new ServerSideHands(new ServerSideRightHand(1.0, new Point(2750, 1050)), new ServerSideDevice(1.0, new double [] {2590.0, 307.0}, new double[] {998, 1762}));
+		
+		ServerSideHands IPhoneF = new ServerSideHands(new ServerSideRightHand(1.0, new Position(1550, 440)), new ServerSideDevice(1.0 , new double [] {788.0, 451.0}, new double[] {382.0, 677.0}));
+		ServerSideHands NexusH = new ServerSideHands(new ServerSideRightHand(1.0, new Position(2750, 1050)), new ServerSideDevice(1.0, new double [] {2590.0, 307.0}, new double[] {998, 1762}));
 	
-		ArrayList<Point> allPoints = new ArrayList<Point>();
-	
+		ArrayList<Position> allPositions = new ArrayList<Position>();
+	    
+		Position restPoint = IPhoneF.restPosition();
     
         try {
         	ArrayList<ArrayList<Integer>> myArray = OpenSocketUtil.openSocket();
         	for (int i= 0; i < myArray.size(); i++){
-        		allPoints.add(new Point(myArray.get(i).get(1), myArray.get(i).get(2), null, myArray.get(i).get(0)));
+        		allPositions.add(new Position(myArray.get(i).get(1),
+        				                   myArray.get(i).get(2),
+        				                   null,
+        				                   myArray.get(i).get(0),
+        				                   myArray.get(i).get(3),
+        				                   myArray.get(i).get(4)
+        				                   ));
         	}	
+        	
 		} catch (IOException e) {
 			System.out.println("erreur dans la boucle principale");
 			e.printStackTrace();
 		}
+        ArrayList<Position> PP = new ArrayList<Position>();
+
+        for (int i = 0; i < allPositions.size(); i++){
+        	switch (allPositions.get(i).getNextPosition()){
+        	    case 0 : try {
+	        	    	     Deltas d0 = Displacement.acceleration(allPositions.get(i), restPoint, speedup);
+	        	             Deltas d1 = Displacement.acceleration(restPoint, allPositions.get(i+1), speedup);
+	        	             PP.addAll(Displacement.deplacement(d0, allPositions.get(i), restPoint, allPositions.get(i+1), d1));
+                         }catch (IndexOutOfBoundsException ioobe){
+                        	 Deltas d0 = Displacement.acceleration(allPositions.get(i), restPoint, speedup);
+            	             Deltas d1 = Displacement.acceleration(restPoint, restPoint, speedup);
+            	             PP.addAll(Displacement.deplacement(d0, allPositions.get(i), restPoint, restPoint, d1));
+                         }
+        	             break;
+        	    case 1 : Deltas d = Displacement.acceleration(allPositions.get(i), allPositions.get(i+1), speedup);
+        	             break;
+        	    default : break;
+        	}
+        }
+        for (Position p : PP){
+			System.out.println(p.getImageNumber() + " " + p.getCoordX() + " " + p.getCoordY());
+        }       
         
 	}
 
-        
+////////////// code précédent : gardé comme note de travail /////////////////////////      
 		     
 
 //		Point p1 = new Point(0, 0);
@@ -67,5 +99,5 @@ public class Principal {
 //			e1.printStackTrace();
 //		}
 //	}
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 }

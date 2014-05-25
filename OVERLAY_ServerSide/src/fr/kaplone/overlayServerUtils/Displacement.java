@@ -1,11 +1,21 @@
 package fr.kaplone.overlayServerUtils;
 import java.util.ArrayList;
 
-import fr.kaplone.sourceUtils.Point;
+import fr.kaplone.sourceUtils.Position;
 
 public class Displacement {
 	
-	public static Deltas acceleration (Point starting, Point ending, double coef){
+	/**
+	 * Provide a list of growing gaps to simulate acceleration
+	 * The goal is to reach the middle of the distance
+	 * 
+	 * @param starting
+	 * @param ending
+	 * @param coef      value used to compute the acceleration 
+	 * @return a Deltas instance that record the list itself and a ratio for the conversion
+	 */
+	
+	public static Deltas acceleration (Position starting, Position ending, double coef){
 		double distance = starting.distanceToPoint(ending);
 		double max = distance /2;
 		double done = 0;
@@ -19,9 +29,33 @@ public class Displacement {
 		return new Deltas(deltas, done - coef);
 	}
 	
-	public static ArrayList<Point> deplacement (Deltas deltasBefore, Point starting, Point touch, Point ending, Deltas deltasAfter){
-		ArrayList<Point> intervals = new ArrayList<Point>();
+	/* note temporaire :
+	 * 
+	 * cette fonction est celle qui produisait le plus gros du calcul pour la preuve de concept.
+	 * il y aura ici beaucoup de travail pour adapter le code et le rendre plus maniable à l'avenir.
+	 * 
+	 * Actuellement, la série des point retournée ne contient que des valeurs fausses :
+	 * - le numéro d'image n'est pas pris en compte
+	 * - pas de conversion des positions (zoom et offset)
+	 *
+	 */
+	
+	/**
+	 * 
+	 * Here is the real Core that merge all the values and lists already computed
+	 * 
+	 * 
+	 * @param deltasBefore
+	 * @param starting
+	 * @param touch
+	 * @param ending
+	 * @param deltasAfter
+	 * @return
+	 */
+	
+	public static ArrayList<Position> deplacement (Deltas deltasBefore, Position starting, Position touch, Position ending, Deltas deltasAfter){
 		
+		ArrayList<Position> intervals = new ArrayList<Position>();
 		int numberOfIntervalsBefore = deltasBefore.getListOfDeltas().size() * 2;
 		int numberOfIntervalsAfter = deltasAfter.getListOfDeltas().size() * 2;
 		int numberOfStartingFrame = touch.getImageNumber() - numberOfIntervalsBefore;
@@ -41,7 +75,7 @@ public class Displacement {
 		
 		for (int i =0; i< deltasBefore.getListOfDeltas().size(); i++){
 			
-			intervals.add(new Point(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
+			intervals.add(new Position(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
 			frameNumber++;
 			progres = deltasBefore.getListOfDeltas().get(i);
 			xTemporary += stepXBefore * progres;
@@ -50,7 +84,7 @@ public class Displacement {
 		
         for (int i = deltasBefore.getListOfDeltas().size() -1; i >= 0 ; i--){
 			
-			intervals.add(new Point(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
+			intervals.add(new Position(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
 			frameNumber++;
 			progres = deltasBefore.getListOfDeltas().get(i);
 			xTemporary += stepXBefore * progres;
@@ -64,7 +98,7 @@ public class Displacement {
       
       for (int i =0; i< deltasAfter.getListOfDeltas().size(); i++){
 			
-			intervals.add(new Point(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
+			intervals.add(new Position(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
 			frameNumber++;
 			progres = deltasAfter.getListOfDeltas().get(i);
 			xTemporary += stepXAfter * progres;
@@ -73,13 +107,13 @@ public class Displacement {
 		
       for (int i = deltasAfter.getListOfDeltas().size() -1; i >= 0 ; i--){
 			
-			intervals.add(new Point(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
+			intervals.add(new Position(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
 			frameNumber++;
 			progres = deltasAfter.getListOfDeltas().get(i);
 			xTemporary += stepXAfter * progres;
 			yTemporary += stepYAfter * progres;
 		}
-      intervals.add(new Point(ending.getCoordX(), ending.getCoordY(), null, frameNumber )); 
+      intervals.add(new Position(ending.getCoordX(), ending.getCoordY(), null, frameNumber )); 
 	  return intervals;
 	}
 

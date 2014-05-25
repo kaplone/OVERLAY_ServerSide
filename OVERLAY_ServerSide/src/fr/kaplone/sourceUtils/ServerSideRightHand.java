@@ -3,7 +3,7 @@ package fr.kaplone.sourceUtils;
 public class ServerSideRightHand {
 	
 	double scaleValue;
-	Point edge;	
+	Position edge;	
 	
 	/**
 	 * 
@@ -11,7 +11,7 @@ public class ServerSideRightHand {
 	 * @param edge
 	 */
 	
-	public ServerSideRightHand(double scaleValue, Point edge){
+	public ServerSideRightHand(double scaleValue, Position edge){
 		this.scaleValue = scaleValue;
 		this.edge = edge;
 	}
@@ -22,12 +22,18 @@ public class ServerSideRightHand {
 	}
 
 
-	public Point getEdge() {
+	public Position getEdge() {
 		return edge;
 	}
 	
+	public double edgeToTop(){
+		return edge.getCoordX();
+	}
+	
 	public ServerSideRightHand scalingRigntHand(double standard){
-		Point scaledEdge = new Point(edge.getCoordX() * scaleValue, edge.getCoordY() * scaleValue);
+		Position scaledEdge = new Position(edge.getCoordX() * scaleValue, edge.getCoordY() * scaleValue);
 		return new ServerSideRightHand( 0.0, scaledEdge);
 	}
+	
+	
 }
