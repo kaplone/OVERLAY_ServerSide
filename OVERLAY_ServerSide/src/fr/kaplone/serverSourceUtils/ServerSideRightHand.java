@@ -1,4 +1,4 @@
-package fr.kaplone.sourceUtils;
+package fr.kaplone.serverSourceUtils;
 
 public class ServerSideRightHand {
 	

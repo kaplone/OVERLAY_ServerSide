@@ -1,64 +1,69 @@
 package fr.kaplone.overlayServer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.kaplone.overlayServerUtils.Deltas;
-import fr.kaplone.overlayServerUtils.OpenSocketUtil;
-import fr.kaplone.overlayServerUtils.ParseFileUtils;
 import fr.kaplone.overlayServerUtils.Displacement;
-import fr.kaplone.sourceUtils.*;
+import fr.kaplone.overlayServerUtils.ParseStreamUtils;
+import fr.kaplone.serverSourceUtils.*;
 
 
-public class Principal {
+public class PrincipalServer {
 
 	public static void main(String[] args) {
 		
-		int speedup = 20;
 		
+		
+		
+		// here we store and initialize device objects.
+		// TODO : load serialized objects at startup and give an interface to add new items.
 		
 		ServerSideHands IPhoneF = new ServerSideHands(new ServerSideRightHand(1.0, new Position(1550, 440)), new ServerSideDevice(1.0 , new double [] {788.0, 451.0}, new double[] {382.0, 677.0}));
 		ServerSideHands NexusH = new ServerSideHands(new ServerSideRightHand(1.0, new Position(2750, 1050)), new ServerSideDevice(1.0, new double [] {2590.0, 307.0}, new double[] {998, 1762}));
-	
-		ArrayList<Position> allPositions = new ArrayList<Position>();
+		
+		// Init fields
+		
+		int speedup = 20;  // greater is faster
+		
+		ArrayList<Position> allKeyPositions = new ArrayList<Position>();
+		ParseStreamUtils.StreamToPositionArray(allKeyPositions);
 	    
+		//TODO : Corriger : la valeur x de restPoint est doublée dans la sortie
 		Position restPoint = IPhoneF.restPosition();
-    
-        try {
-        	ArrayList<ArrayList<Integer>> myArray = OpenSocketUtil.openSocket();
-        	for (int i= 0; i < myArray.size(); i++){
-        		allPositions.add(new Position(myArray.get(i).get(1),
-        				                   myArray.get(i).get(2),
-        				                   null,
-        				                   myArray.get(i).get(0),
-        				                   myArray.get(i).get(3),
-        				                   myArray.get(i).get(4)
-        				                   ));
-        	}	
-        	
-		} catch (IOException e) {
-			System.out.println("erreur dans la boucle principale");
-			e.printStackTrace();
-		}
+		
+		
+        
+        // The model is this old one :
+        //
+        // - Positions of touches are the only known informations.
+        //   So we have to compute the Position (x, y and frame) where the move starts
+        //   and the one where the move ends
+        
         ArrayList<Position> PP = new ArrayList<Position>();
 
-        for (int i = 0; i < allPositions.size(); i++){
-        	switch (allPositions.get(i).getNextPosition()){
+        for (int i = 0; i < allKeyPositions.size(); i++){
+        	switch (allKeyPositions.get(i).getNextPosition()){
         	    case 0 : try {
-	        	    	     Deltas d0 = Displacement.acceleration(allPositions.get(i), restPoint, speedup);
-	        	             Deltas d1 = Displacement.acceleration(restPoint, allPositions.get(i+1), speedup);
-	        	             PP.addAll(Displacement.deplacement(d0, allPositions.get(i), restPoint, allPositions.get(i+1), d1));
+	        	    	     Deltas d0 = Displacement.acceleration(restPoint,allKeyPositions.get(i), speedup);
+	        	             Deltas d1 = Displacement.acceleration(allKeyPositions.get(i+1),restPoint,  speedup);
+	        	             PP.addAll(Displacement.deplacement(d0,restPoint, allKeyPositions.get(i), restPoint, d1));
                          }catch (IndexOutOfBoundsException ioobe){
-                        	 Deltas d0 = Displacement.acceleration(allPositions.get(i), restPoint, speedup);
+                        	 Deltas d0 = Displacement.acceleration(allKeyPositions.get(i), restPoint, speedup);
             	             Deltas d1 = Displacement.acceleration(restPoint, restPoint, speedup);
-            	             PP.addAll(Displacement.deplacement(d0, allPositions.get(i), restPoint, restPoint, d1));
+            	             PP.addAll(Displacement.deplacement(d0, allKeyPositions.get(i), restPoint, restPoint, d1));
                          }
         	             break;
-        	    case 1 : Deltas d = Displacement.acceleration(allPositions.get(i), allPositions.get(i+1), speedup);
+        	             
+        	    //TODO :  cas 1 incomplet : ne correspond pas au modele         
+        	    case 1 : Deltas d = Displacement.acceleration(allKeyPositions.get(i), allKeyPositions.get(i+1), speedup);
         	             break;
         	    default : break;
         	}
         }
+        
+        // print the Position computed and ready to send to client
+        // (Actually heavily bugged)
+        
         for (Position p : PP){
 			System.out.println(p.getImageNumber() + " " + p.getCoordX() + " " + p.getCoordY());
         }       

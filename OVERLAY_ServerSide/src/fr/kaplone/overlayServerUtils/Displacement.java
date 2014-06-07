@@ -1,7 +1,7 @@
 package fr.kaplone.overlayServerUtils;
 import java.util.ArrayList;
 
-import fr.kaplone.sourceUtils.Position;
+import fr.kaplone.serverSourceUtils.Position;
 
 public class Displacement {
 	
@@ -34,8 +34,7 @@ public class Displacement {
 	 * cette fonction est celle qui produisait le plus gros du calcul pour la preuve de concept.
 	 * il y aura ici beaucoup de travail pour adapter le code et le rendre plus maniable à l'avenir.
 	 * 
-	 * Actuellement, la série des point retournée ne contient que des valeurs fausses :
-	 * - le numéro d'image n'est pas pris en compte
+	 * Actuellement, la série de points retournée ne contient que des valeurs fausses :
 	 * - pas de conversion des positions (zoom et offset)
 	 *
 	 */
@@ -113,6 +112,7 @@ public class Displacement {
 			xTemporary += stepXAfter * progres;
 			yTemporary += stepYAfter * progres;
 		}
+      
       intervals.add(new Position(ending.getCoordX(), ending.getCoordY(), null, frameNumber )); 
 	  return intervals;
 	}

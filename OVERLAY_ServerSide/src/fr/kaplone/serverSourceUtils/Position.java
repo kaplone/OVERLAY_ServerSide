@@ -1,4 +1,4 @@
-package fr.kaplone.sourceUtils;
+package fr.kaplone.serverSourceUtils;
 
 //TODO voir  : 
 //             java.awt.geom.Point2D.Double
@@ -131,33 +131,18 @@ public class Position {
 		return coordX;
 	}
 
-	public void setCoordX(int coordX) {
-		this.coordX = coordX;
-	}
-
 	public double getCoordY() {
 		return coordY;
-	}
-
-	public void setCoordY(int coordY) {
-		this.coordY = coordY;
 	}
 
 	public Position getRelativeTo() {
 		return relativeTo;
 	}
 
-	public void setRelativeTo(Position relatif) {
-		this.relativeTo = relatif;
-	}
-	
 	public int getImageNumber() {
 		return imageNumber;
 	}
-	
-	public void setImageNumber(int imageNumero) {
-		this.imageNumber = imageNumero;
-	}
+
 	public int getNextPosition() {
 		return nextPosition;
 	}
