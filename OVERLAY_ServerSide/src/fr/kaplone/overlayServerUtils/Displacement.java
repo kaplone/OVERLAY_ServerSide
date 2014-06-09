@@ -116,5 +116,49 @@ public class Displacement {
       intervals.add(new Position(ending.getCoordX(), ending.getCoordY(), null, frameNumber )); 
 	  return intervals;
 	}
+	
+public static ArrayList<Position> deplacement (Deltas deltasBefore, Position starting, Position touch){
+		
+		ArrayList<Position> intervals = new ArrayList<Position>();
+		int numberOfIntervalsBefore = deltasBefore.getListOfDeltas().size() * 2;
+		int numberOfStartingFrame = touch.getImageNumber() - numberOfIntervalsBefore;
+		int numberRefFrame = touch.getImageNumber();
+		int frameNumber = numberOfStartingFrame;
+		double xTemporary = starting.getCoordX();
+		double yTemporary = starting.getCoordY();
+		
+		double stepXBefore = starting.fullDeltaX(touch) / deltasBefore.getStepValue() / 2;
+		double stepYBefore = starting.fullDeltaY(touch) / deltasBefore.getStepValue() / 2;
+		
+		double progres;
+		
+		for (int i =0; i< deltasBefore.getListOfDeltas().size(); i++){
+			
+			intervals.add(new Position(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
+			frameNumber++;
+			progres = deltasBefore.getListOfDeltas().get(i);
+			xTemporary += stepXBefore * progres;
+			yTemporary += stepYBefore * progres;
+		}
+		
+        for (int i = deltasBefore.getListOfDeltas().size() -1; i >= 0 ; i--){
+			
+			intervals.add(new Position(xTemporary, yTemporary, starting.getRelativeTo(),frameNumber));
+			frameNumber++;
+			progres = deltasBefore.getListOfDeltas().get(i);
+			xTemporary += stepXBefore * progres;
+			yTemporary += stepYBefore * progres;
+		}
+        
+      intervals.add(touch);
+      xTemporary = touch.getCoordX();
+	  yTemporary = touch.getCoordY();
+	  frameNumber = touch.getImageNumber() + 1;
+      
+
+      
+      intervals.add(new Position(touch.getCoordX(), touch.getCoordY(), null, frameNumber )); 
+	  return intervals;
+	}
 
 }

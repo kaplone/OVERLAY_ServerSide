@@ -16,11 +16,13 @@ public class ParseStreamUtils {
 	        	ArrayList<ArrayList<Integer>> myArray = OpenSocketUtil.openSocket();
 	        	for (int i= 0; i < myArray.size(); i++){
 	        		allPositions.add(new Position(myArray.get(i).get(1),
-	        				                   myArray.get(i).get(2),
-	        				                   null,
-	        				                   myArray.get(i).get(0),
-	        				                   myArray.get(i).get(3),
-	        				                   myArray.get(i).get(4)
+	        				                      myArray.get(i).get(2),
+	        				                      null,
+	        				                      myArray.get(i).get(0),
+	        				                      myArray.get(i).get(3),
+	        				                      myArray.get(i).get(4),
+	        				                      myArray.get(i).get(5),
+	        				                      myArray.get(i).get(6)
 	        				                   ));
 	        	}	
 	        	

@@ -42,67 +42,32 @@ public class PrincipalServer {
         ArrayList<Position> PP = new ArrayList<Position>();
 
         for (int i = 0; i < allKeyPositions.size(); i++){
-        	switch (allKeyPositions.get(i).getNextPosition()){
-        	    case 0 : try {
-	        	    	     Deltas d0 = Displacement.acceleration(restPoint,allKeyPositions.get(i), speedup);
-	        	             Deltas d1 = Displacement.acceleration(allKeyPositions.get(i+1),restPoint,  speedup);
-	        	             PP.addAll(Displacement.deplacement(d0,restPoint, allKeyPositions.get(i), restPoint, d1));
-                         }catch (IndexOutOfBoundsException ioobe){
-                        	 Deltas d0 = Displacement.acceleration(allKeyPositions.get(i), restPoint, speedup);
-            	             Deltas d1 = Displacement.acceleration(restPoint, restPoint, speedup);
-            	             PP.addAll(Displacement.deplacement(d0, allKeyPositions.get(i), restPoint, restPoint, d1));
-                         }
-        	             break;
-        	             
-        	    //TODO :  cas 1 incomplet : ne correspond pas au modele         
-        	    case 1 : Deltas d = Displacement.acceleration(allKeyPositions.get(i), allKeyPositions.get(i+1), speedup);
-        	             break;
-        	    default : break;
+        	switch (allKeyPositions.get(i).getPreviousPosition()){
+	             case 0 : Deltas d0_ = Displacement.acceleration(restPoint, allKeyPositions.get(i), speedup);
+    	    	     switch (allKeyPositions.get(i).getNextPosition()){
+    	                case 0 : Deltas d01 = Displacement.acceleration(allKeyPositions.get(i),restPoint,  speedup);
+    	                         PP.addAll(Displacement.deplacement(d0_,restPoint, allKeyPositions.get(i), restPoint, d01));
+    	                         break;
+    	                case 1 : PP.addAll(Displacement.deplacement(d0_,restPoint, allKeyPositions.get(i)));
+                                 break;
+    	    	     }
+    	    	     break;
+    	         case 1 : Deltas d1_ = Displacement.acceleration(allKeyPositions.get(i-1), allKeyPositions.get(i), speedup);
+    	        	 switch (allKeyPositions.get(i).getNextPosition()){
+	 	                case 0 : Deltas d10 = Displacement.acceleration(allKeyPositions.get(i),restPoint,  speedup);
+	 	                         PP.addAll(Displacement.deplacement(d1_,allKeyPositions.get(i-1), allKeyPositions.get(i), restPoint, d10));
+	 	                         break;
+	 	                case 1 : PP.addAll(Displacement.deplacement(d1_,allKeyPositions.get(i-1), allKeyPositions.get(i)));
+	                              break;
+	 	    	     }
         	}
+
         }
         
         // print the Position computed and ready to send to client
-        // (Actually heavily bugged)
         
         for (Position p : PP){
 			System.out.println(p.getImageNumber() + " " + p.getCoordX() + " " + p.getCoordY());
-        }       
-        
+        }         
 	}
-
-////////////// code précédent : gardé comme note de travail /////////////////////////      
-		     
-
-//		Point p1 = new Point(0, 0);
-//		Point p2 = new Point(400, 500, null, 500);
-//		Point p3 = new Point(100, 800);
-//		
-//		
-//		Deltas D0 = Displacement.acceleration(p1, p2, 4);
-//		Deltas D1 = Displacement.acceleration(p2, p3, 2);
-//		ArrayList<Point> PP = Displacement.deplacement(D0, p1, p2, p3, D1);
-//		for (Point p : PP){
-//			System.out.println(p.getImageNumber() + " " + p.getCoordX() + " " + p.getCoordY());
-//		}
-//		
-//		ArrayList<Integer> tousLesTemps;
-//		try {
-//			tousLesTemps = ParseFileUtils.fileToFrameNumber("ref.txt");
-//			System.out.println(tousLesTemps.get(8));
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//		
-//		ArrayList<Integer> tousLesPosX;
-//		
-//		try {
-//			tousLesPosX = ParseFileUtils.fileToPosX("/home/david/TESTS_racket/move/ref.txt");
-//			System.out.println(tousLesPosX.get(8));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//	}
-//////////////////////////////////////////////////////////////////////////////////////////////
 }

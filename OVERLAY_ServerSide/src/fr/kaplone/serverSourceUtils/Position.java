@@ -12,8 +12,10 @@ public class Position {
 	private double coordY;
 	private Position relativeTo;
 	private int imageNumber;
+	private int previousPosition;
 	private int nextPosition;
 	private int actionType;
+	private int zoomLevel;
 	
 	/*
 	 * rootPoint is a point for the finger out of the screen
@@ -30,21 +32,28 @@ public class Position {
 	 *                  Used to convert the finger position in device
 	 *                  to position in the overlay  
 	 * @param num       the number of the current frame
+	 * @param previous  semi-boolean for the position between key positions 
+	 *                  (0 = rootPoint, a Point out of the screen area
+	 *                   1 = the previous key position in the Arraylist)  
 	 * @param next      semi-boolean for the position between key positions 
 	 *                  (0 = rootPoint, a Point out of the screen area
 	 *                   1 = the next key position in the Arraylist)  
 	 * 
 	 * @param action    code for the action on the screen :
 	 *                  1 = touch
+	 *                  
+	 * @param zoom      smooth zoom the whole composition
 	 */
 	
-	public Position(double coordX, double coordY, Position relatif, int num, int next, int action) {
+	public Position(double coordX, double coordY, Position relatif, int num, int previous, int next, int action, int zoom) {
 		this.coordX = coordX;
 		this.coordY = coordY;
 		this.relativeTo = relatif;
 		this.imageNumber = num;
+		this.previousPosition = previous;
 		this.nextPosition = next;
 		this.actionType = action;
+		this.zoomLevel = zoom;
 	}
 	
 	/**
@@ -71,9 +80,11 @@ public class Position {
 	 */
 
 	public Position(double coordX, double coordY) {
-		this(coordX, coordY, null, -1, -1, -1);
+		this(coordX, coordY, null, -1, -1, -1, -1, -1);
 	}
 	
+
+
 	/**
 	 * get the distance on the only X or Y axis 
 	 * 
@@ -142,6 +153,11 @@ public class Position {
 	public int getImageNumber() {
 		return imageNumber;
 	}
+	
+	
+	public int getPreviousPosition() {
+		return previousPosition;
+	}
 
 	public int getNextPosition() {
 		return nextPosition;
@@ -149,6 +165,10 @@ public class Position {
 
 	public int getActionType() {
 		return actionType;
+	}
+
+	public int getZoomLevel() {
+		return zoomLevel;
 	}
 
 
