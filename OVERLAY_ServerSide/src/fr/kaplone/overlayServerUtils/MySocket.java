@@ -3,6 +3,7 @@ package fr.kaplone.overlayServerUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 //import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,7 +11,7 @@ import java.net.Socket;
 public class MySocket {
 	
     private Socket conn = null;
-    //private PrintStream outStream = null;
+    private PrintStream outStream = null;
     private BufferedReader inStream = null;
     
 	public MySocket(ServerSocket sv) throws IOException {
@@ -19,9 +20,11 @@ public class MySocket {
          System.out.println("Server socket created.Waiting for connection...");
          this.conn = sv.accept();
          System.out.println("Connection received from " + conn.getInetAddress().getHostName() + " : " + conn.getPort());  
-         //this.outStream = new PrintStream(conn.getOutputStream());
-         //this.outStream.flush();
+         this.outStream = new PrintStream(conn.getOutputStream());
          this.inStream = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+         
+//         this.outStream.println("***********");
+//         this.outStream.flush();
 
 	}
 
@@ -29,9 +32,9 @@ public class MySocket {
 		return conn;
 	}
 
-//	public PrintStream getOutStream() {
-//		return outStream;
-//	}
+	public PrintStream getOutStream() {
+		return outStream;
+	}
 
 	public BufferedReader getInStream() {
 		return inStream;

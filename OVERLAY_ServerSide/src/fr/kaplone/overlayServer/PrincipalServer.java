@@ -1,11 +1,13 @@
 package fr.kaplone.overlayServer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import fr.kaplone.overlayServerUtils.Deltas;
 import fr.kaplone.overlayServerUtils.Displacement;
 import fr.kaplone.overlayServerUtils.ParseStreamUtils;
 import fr.kaplone.serverSourceUtils.*;
+import fr.kaplone.overlayServerUtils.OpenSocketUtil;
 
 
 public class PrincipalServer {
@@ -28,7 +30,7 @@ public class PrincipalServer {
 		ArrayList<Position> allKeyPositions = new ArrayList<Position>();
 		ParseStreamUtils.StreamToPositionArray(allKeyPositions);
 	    
-		//TODO : Corriger : la valeur x de restPoint est doublée dans la sortie
+		//TODO : Chercher/Corriger : la valeur x de restPoint est doublée dans la sortie
 		Position restPoint = IPhoneF.restPosition();
 		
 		
@@ -43,20 +45,27 @@ public class PrincipalServer {
 
         for (int i = 0; i < allKeyPositions.size(); i++){
         	switch (allKeyPositions.get(i).getPreviousPosition()){
+        	     // from restPosition ...
 	             case 0 : Deltas d0_ = Displacement.acceleration(restPoint, allKeyPositions.get(i), speedup);
     	    	     switch (allKeyPositions.get(i).getNextPosition()){
+    	    	        // ... to restPosition
     	                case 0 : Deltas d01 = Displacement.acceleration(allKeyPositions.get(i),restPoint,  speedup);
     	                         PP.addAll(Displacement.deplacement(d0_,restPoint, allKeyPositions.get(i), restPoint, d01));
     	                         break;
+    	                // ... stay over the screen
     	                case 1 : PP.addAll(Displacement.deplacement(d0_,restPoint, allKeyPositions.get(i)));
                                  break;
     	    	     }
     	    	     break;
+    	    	     
+    	    	 // from previous position ...
     	         case 1 : Deltas d1_ = Displacement.acceleration(allKeyPositions.get(i-1), allKeyPositions.get(i), speedup);
     	        	 switch (allKeyPositions.get(i).getNextPosition()){
+    	        	    // ... to restPosition
 	 	                case 0 : Deltas d10 = Displacement.acceleration(allKeyPositions.get(i),restPoint,  speedup);
 	 	                         PP.addAll(Displacement.deplacement(d1_,allKeyPositions.get(i-1), allKeyPositions.get(i), restPoint, d10));
 	 	                         break;
+	 	                // ... stay on the screen
 	 	                case 1 : PP.addAll(Displacement.deplacement(d1_,allKeyPositions.get(i-1), allKeyPositions.get(i)));
 	                              break;
 	 	    	     }
@@ -66,8 +75,15 @@ public class PrincipalServer {
         
         // print the Position computed and ready to send to client
         
+        String retour = "";
         for (Position p : PP){
-			System.out.println(p.getImageNumber() + " " + p.getCoordX() + " " + p.getCoordY());
-        }         
+			retour += p.getImageNumber() + " " + p.getCoordX() + " " + p.getCoordY() + "\n";
+        } 
+        try {
+			OpenSocketUtil.sendViaSocket(retour);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
