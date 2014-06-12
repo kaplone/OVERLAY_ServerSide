@@ -12,7 +12,7 @@ import fr.kaplone.overlayServerUtils.OpenSocketUtil;
 
 public class PrincipalServer {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
 		
 		
@@ -25,9 +25,10 @@ public class PrincipalServer {
 		
 		// Init fields
 		
-		int speedup = 20;  // greater is faster
+		int speedup = 20;  // greater moves faster
 		
 		ArrayList<Position> allKeyPositions = new ArrayList<Position>();
+		
 		ParseStreamUtils.StreamToPositionArray(allKeyPositions);
 	    
 		//TODO : Chercher/Corriger : la valeur x de restPoint est doublée dans la sortie
@@ -77,13 +78,10 @@ public class PrincipalServer {
         
         String retour = "";
         for (Position p : PP){
-			retour += p.getImageNumber() + " " + p.getCoordX() + " " + p.getCoordY() + "\n";
+			retour += Math.round(p.getImageNumber()) + " " + Math.round(p.getCoordX()) + " " + Math.round(p.getCoordY()) + "\n";
         } 
-        try {
-			OpenSocketUtil.sendViaSocket(retour);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        System.out.println(retour);
+        OpenSocketUtil.sendViaSocket(retour);
+        System.out.println("retour envoyé");
 	}
 }
