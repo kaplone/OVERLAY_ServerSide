@@ -1,38 +1,34 @@
 package fr.kaplone.serverSourceUtils;
 
-public class ServerSideRightHand {
+import java.io.File;
+
+public class ServerSideRightHand extends ServerSideLayer {
 	
-	double scaleValue;
+	String pathString;
 	Position edge;	
 	
 	/**
 	 * 
-	 * @param scaleValue
 	 * @param edge
 	 */
 	
-	public ServerSideRightHand(double scaleValue, Position edge){
-		this.scaleValue = scaleValue;
+	public ServerSideRightHand(String pathName, double scaleValue, Position edge){
+		super(pathName, scaleValue);
+		this.pathString = pathName;
 		this.edge = edge;
 	}
-
-
-	public double getScaleValue() {
-		return scaleValue;
-	}
-
 
 	public Position getEdge() {
 		return edge;
 	}
 	
 	public double edgeToTop(){
-		return edge.getCoordX();
+		return edge.getCoordY();
 	}
 	
 	public ServerSideRightHand scalingRigntHand(double standard){
-		Position scaledEdge = new Position(edge.getCoordX() * scaleValue, edge.getCoordY() * scaleValue);
-		return new ServerSideRightHand( 0.0, scaledEdge);
+		Position scaledEdge = new Position(edge.getCoordX() * this.getScaleValue(), edge.getCoordY() * this.getScaleValue());
+		return new ServerSideRightHand(this.pathString, 1.0, scaledEdge);
 	}
 	
 	

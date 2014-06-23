@@ -1,39 +1,26 @@
 package fr.kaplone.serverSourceUtils;
 
-public class ServerSideDevice {
+public class ServerSideDevice extends ServerSideLayer {
 	
-	double scaleValue;
-	
-	double[] imageSize = new double[2];
+	String pathString;
 	double[] screenSize = new double[2];
 	double[] screenPos = new double[2];
 	
 	/**
 	 * 
-	 * @param scaleValue
 	 * @param offset
 	 * @param screenSize
 	 */
 	
-	public ServerSideDevice(double scaleValue, double[] offset, double [] screenSize){
-		this.scaleValue = scaleValue;
+	public ServerSideDevice(String pathName, double scaleValue, double[] offset, double [] screenSize){
+		super(pathName, scaleValue);
+		this.pathString = pathName;
 		this.screenSize = screenSize;
 		this.screenPos = offset;
 	}
-	
-	public double getImageWidth(){
-		return this.imageSize[0];
-	}
-	public double getImageHeight(){
-		return this.imageSize[1];
-	}
-	
-	public double[] getImageSize() {
-		return imageSize;
-	}
 
 	public double[] getScreenSize() {
-		return screenSize;
+		return this.screenSize;
 	}
 
 	public double getScreenWidth(){
@@ -54,7 +41,7 @@ public class ServerSideDevice {
 	public ServerSideDevice scalingDevice(double standard){
 		double[] scaledScreen = {this.getScreenWidth() * standard, this.getScreenHeight() * standard};
 		double[] scaledOffset = {this.getOffsetX() * standard, this.getOffsetY() * standard};
-		return new ServerSideDevice( 0, scaledScreen, scaledOffset);
+		return new ServerSideDevice(this.pathString, 1.0, scaledScreen, scaledOffset);
 	}
 	
 

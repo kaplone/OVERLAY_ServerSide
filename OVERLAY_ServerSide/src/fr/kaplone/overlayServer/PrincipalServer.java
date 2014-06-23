@@ -13,15 +13,17 @@ import fr.kaplone.overlayServerUtils.OpenSocketUtil;
 public class PrincipalServer {
 
 	public static void main(String[] args) throws IOException {
-		
-		
-		
-		
+	
 		// here we store and initialize device objects.
-		// TODO : load serialized objects at startup and give an interface to add new items.
+		// missing : images sizes and images paths
+		// TODO : load serialized objects at startup and give an access to add/select item.
 		
-		ServerSideHands IPhoneF = new ServerSideHands(new ServerSideRightHand(1.0, new Position(1550, 440)), new ServerSideDevice(1.0 , new double [] {788.0, 451.0}, new double[] {382.0, 677.0}));
-		ServerSideHands NexusH = new ServerSideHands(new ServerSideRightHand(1.0, new Position(2750, 1050)), new ServerSideDevice(1.0, new double [] {2590.0, 307.0}, new double[] {998, 1762}));
+		ServerSideHands IPhoneF = new ServerSideHands(new ServerSideRightHand("images/source_pictures/Main_F_Clic_1_.png",1.0, new Position(1550, 440)), 
+				                                      new ServerSideDevice("images/source_pictures/Main_F_iPhones_1.png",1.0 , new double [] {788.0, 451.0}, 
+				                                    		                     new double[] {382.0, 677.0}));
+		ServerSideHands NexusH = new ServerSideHands(new ServerSideRightHand("images/source_pictures/Main_Click_1.png", 1.0, new Position(2750, 1050)), 
+				                                     new ServerSideDevice("images/source_pictures/Main_Nexus_1.png",1.0 , new double [] {2590.0, 307.0}, 
+				                                    		                   new double[] {998, 1762}));
 		
 		// Init fields
 		
@@ -30,13 +32,10 @@ public class PrincipalServer {
 		ArrayList<Position> allKeyPositions = new ArrayList<Position>();
 		
 		ParseStreamUtils.StreamToPositionArray(allKeyPositions);
-	    
-		//TODO : Chercher/Corriger : la valeur x de restPoint est doublée dans la sortie
-		Position restPoint = IPhoneF.restPosition();
-		
-		
+
+		Position restPoint = IPhoneF.getRestPosition();		
         
-        // The model is this old one :
+        // The model is a new one :
         //
         // - Positions of touches are the only known informations.
         //   So we have to compute the Position (x, y and frame) where the move starts
@@ -82,6 +81,5 @@ public class PrincipalServer {
         } 
         System.out.println(retour);
         OpenSocketUtil.sendViaSocket(retour);
-        System.out.println("retour envoyé");
 	}
 }

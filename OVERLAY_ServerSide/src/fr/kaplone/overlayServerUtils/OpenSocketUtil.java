@@ -51,13 +51,11 @@ public class OpenSocketUtil {
 			    
 				boucle = false;
 				String lectureString = result.toString();
-				System.out.println(lectureString);
 				
 				BufferedReader lignes = new BufferedReader(new StringReader(lectureString));
 				
 				String ligne = lignes.readLine();
 				while (ligne != null){
-					System.out.println(ligne);
 					scan = new Scanner(ligne);
 					while (scan.hasNextInt()){
 						z = scan.nextInt();

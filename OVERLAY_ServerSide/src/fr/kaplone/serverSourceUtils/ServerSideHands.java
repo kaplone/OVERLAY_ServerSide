@@ -10,7 +10,7 @@ public class ServerSideHands {
 		this.device = device;
 	}
 	
-	public Position restPosition(){
+	public Position getRestPosition(){
 		return new Position(device.getOffsetX() + device.getScreenWidth()/2, device.getImageHeight()+ hand.edgeToTop());
 		
 	}
