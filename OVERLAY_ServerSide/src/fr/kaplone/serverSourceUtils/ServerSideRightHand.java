@@ -1,21 +1,23 @@
 package fr.kaplone.serverSourceUtils;
 
-import java.io.File;
-
 public class ServerSideRightHand extends ServerSideLayer {
-	
-	String pathString;
+
 	Position edge;	
+	double scaleValue;
 	
 	/**
 	 * 
 	 * @param edge
 	 */
 	
-	public ServerSideRightHand(String pathName, double scaleValue, Position edge){
-		super(pathName, scaleValue);
-		this.pathString = pathName;
+	public ServerSideRightHand(double [] imageSize, double scaleValue, Position edge){
+		super(imageSize, scaleValue);
 		this.edge = edge;
+		this.scaleValue = scaleValue;
+	}
+	
+	public ServerSideRightHand(double imageWidth, double imageHeight , double scaleValue, Position edge){
+		this(new double [] {imageWidth, imageHeight}, scaleValue, edge);
 	}
 
 	public Position getEdge() {
@@ -26,9 +28,12 @@ public class ServerSideRightHand extends ServerSideLayer {
 		return edge.getCoordY();
 	}
 	
-	public ServerSideRightHand scalingRigntHand(double standard){
-		Position scaledEdge = new Position(edge.getCoordX() * this.getScaleValue(), edge.getCoordY() * this.getScaleValue());
-		return new ServerSideRightHand(this.pathString, 1.0, scaledEdge);
+	public ServerSideRightHand scaledRigntHand(double standard){
+		standard /= this.scaleValue;
+		double[] scaledImageSize = {this.getImageWidth() * standard, this.getImageHeight() * standard};
+		Position scaledEdge = new Position(edge.getCoordX() * standard, edge.getCoordY() * standard);
+		//System.out.println(scaledImageSize[0] + " " + scaledImageSize[0] + " " + scaledEdge.toString());
+		return new ServerSideRightHand(scaledImageSize, 1.0, scaledEdge);
 	}
 	
 	

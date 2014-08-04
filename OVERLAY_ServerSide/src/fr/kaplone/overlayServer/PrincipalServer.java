@@ -15,15 +15,32 @@ public class PrincipalServer {
 	public static void main(String[] args) throws IOException {
 	
 		// here we store and initialize device objects.
-		// missing : images sizes and images paths
 		// TODO : load serialized objects at startup and give an access to add/select item.
 		
-		ServerSideHands IPhoneF = new ServerSideHands(new ServerSideRightHand("images/source_pictures/Main_F_Clic_1_.png",1.0, new Position(1550, 440)), 
-				                                      new ServerSideDevice("images/source_pictures/Main_F_iPhones_1.png",1.0 , new double [] {788.0, 451.0}, 
-				                                    		                     new double[] {382.0, 677.0}));
-		ServerSideHands NexusH = new ServerSideHands(new ServerSideRightHand("images/source_pictures/Main_Click_1.png", 1.0, new Position(2750, 1050)), 
-				                                     new ServerSideDevice("images/source_pictures/Main_Nexus_1.png",1.0 , new double [] {2590.0, 307.0}, 
-				                                    		                   new double[] {998, 1762}));
+		
+		ServerSideRightHand IPhoneF_RH = new ServerSideRightHand(new double [] {3744, 5136},
+				                                                 1100,
+				                                                 new Position(1550, 440));
+		
+		ServerSideDevice IPhoneF_Dev = new ServerSideDevice(new double [] {1920, 2000},
+				                                            386,
+				                                            new double [] {788.0, 451.0}, 
+                                                            new double [] {382.0, 677.0});
+		
+		ServerSideRightHand NexusH_RH = new ServerSideRightHand(new double [] {5616, 3744},
+				                                                770,
+				                                                new Position(2750, 1050));
+		
+		ServerSideDevice NexusH_dev = new ServerSideDevice(new double [] {5616, 3744},
+				                                           770 ,
+				                                           new double [] {2590.0, 307.0},
+				                                           new double[] {998, 1762});
+		
+		ServerSideBackground BG = new ServerSideBackground(new double [] {9000, 7500});
+		
+		ServerSideOverlay IPhoneF = new ServerSideOverlay(IPhoneF_RH, IPhoneF_Dev, BG).scaledServerSideOverlay();
+
+		ServerSideOverlay NexusH = new ServerSideOverlay(NexusH_RH, NexusH_dev, BG).scaledServerSideOverlay();
 		
 		// Init fields
 		
@@ -33,7 +50,8 @@ public class PrincipalServer {
 		
 		ParseStreamUtils.StreamToPositionArray(allKeyPositions);
 
-		Position restPoint = IPhoneF.getRestPosition();		
+		Position restPoint = IPhoneF.getRestPosition();	
+		ServerSideOverlay overlay = IPhoneF;
         
         // The model is a new one :
         //
@@ -42,31 +60,38 @@ public class PrincipalServer {
         //   and the one where the move ends
         
         ArrayList<Position> PP = new ArrayList<Position>();
+        Position newPos;
+        double [] offset = overlay.getDevice().getOffset();
 
         for (int i = 0; i < allKeyPositions.size(); i++){
-        	switch (allKeyPositions.get(i).getPreviousPosition()){
+        	
+        	newPos = allKeyPositions.get(i).computeNewPosition(offset);
+        	
+        	switch (newPos.getPreviousPosition()){
         	     // from restPosition ...
-	             case 0 : Deltas d0_ = Displacement.acceleration(restPoint, allKeyPositions.get(i), speedup);
-    	    	     switch (allKeyPositions.get(i).getNextPosition()){
+	             case 0 : Deltas d0_ = Displacement.acceleration(restPoint, newPos, speedup);
+    	    	     switch (newPos.getNextPosition()){
     	    	        // ... to restPosition
-    	                case 0 : Deltas d01 = Displacement.acceleration(allKeyPositions.get(i),restPoint,  speedup);
-    	                         PP.addAll(Displacement.deplacement(d0_,restPoint, allKeyPositions.get(i), restPoint, d01));
+    	                case 0 : Deltas d01 = Displacement.acceleration(newPos,restPoint,  speedup);
+    	                         PP.addAll(Displacement.deplacement(d0_,restPoint, newPos, restPoint, d01));
     	                         break;
     	                // ... stay over the screen
-    	                case 1 : PP.addAll(Displacement.deplacement(d0_,restPoint, allKeyPositions.get(i)));
+    	                case 1 : PP.addAll(Displacement.deplacement(d0_,restPoint, newPos));
                                  break;
     	    	     }
     	    	     break;
     	    	     
     	    	 // from previous position ...
-    	         case 1 : Deltas d1_ = Displacement.acceleration(allKeyPositions.get(i-1), allKeyPositions.get(i), speedup);
-    	        	 switch (allKeyPositions.get(i).getNextPosition()){
+   	    	     
+    	         case 1 : Position newPreviousPos = allKeyPositions.get(i-1).computeNewPosition(offset);
+    	        	 Deltas d1_ = Displacement.acceleration(newPreviousPos, newPos, speedup);
+    	        	 switch (newPos.getNextPosition()){
     	        	    // ... to restPosition
-	 	                case 0 : Deltas d10 = Displacement.acceleration(allKeyPositions.get(i),restPoint,  speedup);
-	 	                         PP.addAll(Displacement.deplacement(d1_,allKeyPositions.get(i-1), allKeyPositions.get(i), restPoint, d10));
+	 	                case 0 : Deltas d10 = Displacement.acceleration(newPos,restPoint,  speedup);
+	 	                         PP.addAll(Displacement.deplacement(d1_,newPreviousPos, newPos, restPoint, d10));
 	 	                         break;
 	 	                // ... stay on the screen
-	 	                case 1 : PP.addAll(Displacement.deplacement(d1_,allKeyPositions.get(i-1), allKeyPositions.get(i)));
+	 	                case 1 : PP.addAll(Displacement.deplacement(d1_,newPreviousPos, newPos));
 	                              break;
 	 	    	     }
         	}

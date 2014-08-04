@@ -137,6 +137,14 @@ public class Position {
 	public Position fingerRelativeToRootPoint(double x, double y){
 		return new Position(x - this.getCoordX( ), y - this.getCoordY(), rootPosition, this.imageNumber);
 	}
+	
+	public Position computeNewPosition(double [] offset){
+		return new Position(offset[0] + this.getCoordX( ), offset[1] - this.getCoordY(), rootPosition, this.imageNumber);
+	}
+	
+	public String toString() {
+		return this.coordX +  " " + this.coordY;
+	}
 
 	public double getCoordX() {
 		return coordX;
